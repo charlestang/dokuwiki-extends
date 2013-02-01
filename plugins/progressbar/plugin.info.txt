@@ -1,0 +1,7 @@
+base   progressbar
+author Charles Tang
+email  charlestang@foxmail.com
+date   2013-02-01
+name   Progress Bar Plugin
+desc   Display a static progress bar for you to track the progress of something on your wiki page.
+url    https://github.com/charlestang/dokuwiki-extends/tree/master/plugins/progressbar

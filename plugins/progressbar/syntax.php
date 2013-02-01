@@ -1,64 +1,37 @@
 <?php
 
-/* DokuWiki Progressbar plugin
- * Internal version 1.0.0
- * 
- * Copyright (C) 2013 Charles Tang 
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+/**
+ * DokuWiki Plugin progressbar (Syntax Component)
+ *
+ * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @author  Charles Tang <charlestang@foxmail.com>
  */
+// must be run within Dokuwiki
+defined('DOKU_INC') or die();
+defined('DOKU_LF') or define('DOKU_LF', "\n");
+defined('DOKU_TAB') or define('DOKU_TAB', "\t");
+defined('DOKU_PLUGIN') or define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
 
-if (!defined('DOKU_INC'))
-    define('DOKU_INC', realpath(dirname(__FILE__) . '/../../') . '/');
-if (!defined('DOKU_PLUGIN'))
-    define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
-require_once(DOKU_PLUGIN . 'syntax.php');
+require_once DOKU_PLUGIN . 'syntax.php';
 
 class syntax_plugin_progressbar extends DokuWiki_Syntax_Plugin {
 
-    /**
-     * return some info
-     */
-    function getInfo() {
-        return array
-            (
-            'author' => 'Charles Tang',
-            'email' => 'charletang@foxmail.com',
-            'date' => '2013-01-31',
-            'name' => 'Progressbar',
-            'desc' => 'Makes progress bars on wiki pages.',
-            'url' => 'https://github.com/charlestang/dokuwiki-extends',
-        );
-    }
-
-    /**
-     * What kind of syntax are we?
-     */
     function getType() {
         return 'substition';
     }
 
-    /**
-     * Where to sort in?
-     */
     function getSort() {
-        return 999;
+        return 131;
     }
 
     /**
      * Handle the match
+     * 
+     * @param   $match   string    The text matched by the patterns
+     * @param   $state   int       The lexer state for the match
+     * @param   $pos     int       The character position of the matched text
+     * @param   $handler Doku_Handler Reference to the Doku_Handler object
+     * @return  array              Return an array with all data you want to use in render
      */
     function handle($match, $state, $pos, &$handler) {
         $match = substr($match, 10, -1);
@@ -79,18 +52,48 @@ class syntax_plugin_progressbar extends DokuWiki_Syntax_Plugin {
 
     /**
      * Create output
+     * 
+     * @param   $format   string        output format being rendered
+     * @param   $renderer Doku_Renderer reference to the current renderer object
+     * @param   $data     array         data created by handler()
+     * @return  boolean                 rendered correctly?
      */
-    function render($mode, &$renderer, $data) {
+    function render($format, &$renderer, $data) {
+        if ($format!= 'xhtml')
+            return false;
         if ($data[0] < 0) {
             $data[0] = 0;
         }
         if ($data[0] > 100) {
             $data[0] = 100;
         }
-        $sizeLeft = 100 - $data[0];
+        $sizeRight = 100 - $data[0];
 
-        $renderer->doc .= '<span style="padding:0;height:8px;width: 100px;">' . ($data[0] <= 0 ? '' : '<span style="margin:0;padding:0;background-color:#74a6c9; height:8px; width:' . $data[0] . '"><img src="' . dirname($_SERVER['PHP_SELF']) . 'lib/images/blank.gif" width="' . $data[0] . '" border="0" title="' . $data[0] . '%" alt="' . $data[0] . '%" hspace="0" vspace="0" style="height:8px" /></span>') . ($data[0] >= 100 ? '' : '<span style="margin:0;padding:0;background-color: #dee7ec;height:8px;width:' . $sizeLeft . '"><img src="' . dirname($_SERVER['PHP_SELF']) . 'lib/images/blank.gif" width="' . $sizeLeft . '" border="0" title="' . $data[0] . '%" alt="' . $data[0] . '%" hspace="0" vspace="0" style="height:8px" /></span>') . '</span>&nbsp;' . $data[0] . '%';
+        $blank_pic_url = DOKU_URL . 'lib/images/blank.gif';
 
+        if ($data[0] <= 0) {
+            $leftBar = '';
+        } else {
+            $leftBar = <<< PROGRESS
+    <span style="margin:0;padding:0;background-color:#74a6c9;height:8px;width:{$data[0]}px">
+        <img src="{$blank_pic_url}" width="{$data[0]}" border="0" title="{$data[0]}%" 
+            alt="{$data[0]}%" hspace="0" vspace="0" style="height:8px;" />
+    </span>
+PROGRESS;
+        }
+
+        if ($data[0] >= 100) {
+            $rightBar = '';
+        } else {
+            $rightBar = <<< PROGRESS
+    <span style="margin:0;padding:0;background-color: #dee7ec;height:8px;width:{$sizeRight}px">
+        <img src="{$blank_pic_url}" width="{$sizeRight}" border="0" title="{$data[0]}%" 
+            alt="{$data[0]}%" hspace="0" vspace="0" style="height:8px" />
+    </span>
+PROGRESS;
+        }
+
+        $renderer->doc .= '<span style="padding:0;height:8px;width:100px;">' . $leftBar . $rightBar . '</span>&nbsp;' . $data[0] . '%';
         return true;
     }
 
