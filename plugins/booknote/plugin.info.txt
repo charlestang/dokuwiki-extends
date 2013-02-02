@@ -1,0 +1,7 @@
+base   booknote
+author Charles Tang
+email  charlestang@foxmail.com
+date   2013-02-01
+name   booknote plugin
+desc   This plugin will fetch book info from douban.com and generate a table for you to input some note about it, the plugin support progressbar plugin.
+url    https://github.com/charlestang/dokuwiki-extends/tree/master/plugins

@@ -16,11 +16,11 @@ require_once DOKU_PLUGIN . 'syntax.php';
 
 class syntax_plugin_progressbar extends DokuWiki_Syntax_Plugin {
 
-    function getType() {
+    public function getType() {
         return 'substition';
     }
 
-    function getSort() {
+    public function getSort() {
         return 131;
     }
 
@@ -33,7 +33,7 @@ class syntax_plugin_progressbar extends DokuWiki_Syntax_Plugin {
      * @param   $handler Doku_Handler Reference to the Doku_Handler object
      * @return  array              Return an array with all data you want to use in render
      */
-    function handle($match, $state, $pos, &$handler) {
+    public function handle($match, $state, $pos, &$handler) {
         $match = substr($match, 10, -1);
         if (false !== strpos($match, '/')) {
             $nums = explode('/', $match, 2);
@@ -45,7 +45,7 @@ class syntax_plugin_progressbar extends DokuWiki_Syntax_Plugin {
     /**
      * Connect pattern to lexer
      */
-    function connectTo($mode) {
+    public function connectTo($mode) {
         $this->Lexer->addSpecialPattern('<progress=(?:[0-9]{1,2}|100?)>', $mode, 'plugin_progressbar');
         $this->Lexer->addSpecialPattern('<progress=(?:\d+/\d+)>', $mode, 'plugin_progressbar');
     }
@@ -58,7 +58,7 @@ class syntax_plugin_progressbar extends DokuWiki_Syntax_Plugin {
      * @param   $data     array         data created by handler()
      * @return  boolean                 rendered correctly?
      */
-    function render($format, &$renderer, $data) {
+    public function render($format, &$renderer, $data) {
         if ($format!= 'xhtml')
             return false;
         if ($data[0] < 0) {
