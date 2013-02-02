@@ -19,3 +19,10 @@ or you can use two number divide style
 > `<progress=34/105>`
 
 the first number should be smaller than the second one, and both of them should be integer.
+
+### Booknote
+
+This plugin grab data from douban.com and show basic book info on your wiki, include title, pages, rating,
+and you can insert some note for the book.
+
+> `<booknote isbn=9787547011607> This is a very nice book.</booknote>`
