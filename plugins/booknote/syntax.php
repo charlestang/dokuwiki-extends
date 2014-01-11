@@ -45,11 +45,6 @@ class syntax_plugin_booknote extends DokuWiki_Syntax_Plugin {
 
         static $i;
 
-        error_log("i=" . $i++);
-        error_log("state=" . $state);
-        error_log($match);
-
-
         switch ($state) {
             case DOKU_LEXER_UNMATCHED:
                 $data['state'] = DOKU_LEXER_UNMATCHED;
@@ -85,6 +80,8 @@ class syntax_plugin_booknote extends DokuWiki_Syntax_Plugin {
             case DOKU_LEXER_ENTER:
                 $bookinfo = $this->doHttpRequest($data['params']['isbn']);
                 if (false !== $bookinfo) {
+                    $fileName = $this->getFileName($data['params']['isbn']);
+                    file_put_contents($fileName, $bookinfo);
                     $bookinfo = json_decode($bookinfo, true);
                     $book = <<< BOOK
         <span style="clear:both"></span>
@@ -112,6 +109,11 @@ BOOK;
 
     public function doHttpRequest($isbn) {
 
+        $fileName = $this->getFileName($isbn);
+        if (file_exists($fileName)) {
+            return file_get_contents($fileName);
+        }
+
         $url = 'https://api.douban.com/v2/book/isbn/' . $isbn;
 
         $curl = curl_init($url);
@@ -125,6 +127,10 @@ BOOK;
         }
         curl_close($curl);
         return $result;
+    }
+
+    public function getFileName($isbn) {
+        return DOKU_PLUGIN .'booknote/books/isbn_' . $isbn;
     }
 
 }
